@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>UCSC Student Dashboard</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#f5f5f5;
+}
+
+/* NAVBAR */
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#800000;
+color:white;
+padding:15px 20px;
+}
+
+.navbar img{
+height:40px;
+margin-right:10px;
+}
+
+.nav-left{
+display:flex;
+align-items:center;
+font-weight:bold;
+}
+
+.nav-menu{
+list-style:none;
+display:flex;
+gap:20px;
+}
+
+.nav-menu li{
+cursor:pointer;
+}
+
+.dark-toggle button{
+background:#FFD700;
+border:none;
+padding:6px 12px;
+cursor:pointer;
+border-radius:6px;
+}
+
+/* LAYOUT */
+
+.dashboard{
+display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+width:220px;
+background:#eee;
+padding:20px;
+}
+
+.sidebar h3{
+margin-top:0;
+}
+
+.event{
+background:white;
+padding:10px;
+margin:10px 0;
+border-radius:8px;
+transition:0.3s;
+}
+
+.event:hover{
+transform:scale(1.05);
+box-shadow:0 0 10px gold;
+}
+
+/* MAIN CONTENT */
+
+.main{
+flex:1;
+padding:20px;
+}
+
+/* IDEA BOARD */
+
+.container{
+background:white;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.add-btn{
+background:#800000;
+color:white;
+}
+
+.clear-btn{
+background:#ccc;
+}
+
+.idea-item{
+background:#f2f2f2;
+padding:10px;
+margin-top:10px;
+border-radius:6px;
+}
+
+/* GPA */
+
+.gpa-section{
+background:white;
+padding:20px;
+border-radius:10px;
+margin-bottom:20px;
+box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+/* TIMER */
+
+.timer-section{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+#timer{
+font-size:30px;
+font-weight:bold;
+}
+
+/* FADE IN */
+
+.container, .gpa-section, .timer-section{
+animation:fadein 1s ease;
+}
+
+@keyframes fadein{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+/* DARK MODE */
+
+.dark-mode{
+background:#1e1e1e;
+color:white;
+}
+
+.dark-mode .container,
+.dark-mode .gpa-section,
+.dark-mode .timer-section{
+background:#333;
+color:white;
+}
+
+.dark-mode .sidebar{
+background:#2c2c2c;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+<div class="nav-left">
+<img src="https://via.placeholder.com/40">
+<span>UCSC Dashboard</span>
+</div>
+
+<ul class="nav-menu">
+<li>GPA Calculator</li>
+<li>Study Timer</li>
+</ul>
+
+<div class="dark-toggle">
+<button onclick="toggleDarkMode()">🌙</button>
+</div>
+
+</nav>
+
+
+<div class="dashboard">
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h3>Upcoming Events</h3>
+
+<div class="event">Assignment Submission - Friday</div>
+<div class="event">Group Meeting - Monday</div>
+<div class="event">Exam Revision - Next Week</div>
+
+</div>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+<!-- IDEA BOARD -->
+
+<div class="container">
+
+<h2>Group Idea Board</h2>
+
+<label>Enter your idea</label>
+<input type="text" id="ideaInput">
+
+<label>Suggested by</label>
+<input type="text" id="nameInput">
+
+<button class="add-btn" onclick="addIdea()">Add Idea</button>
+<button class="clear-btn" onclick="clearInput()">Clear</button>
+
+<p>Total Ideas: <span id="ideaCount">0</span></p>
+
+<div id="ideaList"></div>
+
+</div>
+
+
+<!-- GPA CALCULATOR -->
+
+<div class="gpa-section">
+
+<h2>GPA Calculator</h2>
+
+<input type="number" id="credits" placeholder="Course Credits">
+<input type="number" id="grade" placeholder="Grade Points">
+
+<button onclick="calculateGPA()">Calculate</button>
+
+<p>Your GPA: <span id="gpaResult">0</span></p>
+
+</div>
+
+
+<!-- POMODORO TIMER -->
+
+<div class="timer-section">
+
+<h2>Pomodoro Study Timer</h2>
+
+<p id="timer">25:00</p>
+
+<button onclick="startTimer()">Start</button>
+<button onclick="resetTimer()">Reset</button>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+/* IDEA BOARD */
+
+let ideaCount = 0;
+
+function addIdea(){
+
+let idea = document.getElementById("ideaInput").value;
+let name = document.getElementById("nameInput").value;
+
+if(idea === "" || name === ""){
+alert("Please enter both idea and name");
+return;
+}
+
+let list = document.getElementById("ideaList");
+
+let newIdea = document.createElement("div");
+newIdea.className = "idea-item";
+newIdea.textContent = idea + " – suggested by " + name;
+
+list.appendChild(newIdea);
+
+ideaCount++;
+document.getElementById("ideaCount").textContent = ideaCount;
+
+clearInput();
+}
+
+function clearInput(){
+document.getElementById("ideaInput").value="";
+document.getElementById("nameInput").value="";
+}
+
+
+/* GPA CALCULATOR */
+
+function calculateGPA(){
+
+let credits = document.getElementById("credits").value;
+let grade = document.getElementById("grade").value;
+
+if(credits==="" || grade===""){
+alert("Enter credits and grade");
+return;
+}
+
+let gpa = grade / credits;
+
+document.getElementById("gpaResult").textContent = gpa.toFixed(2);
+
+}
+
+
+/* TIMER */
+
+let time = 1500;
+let timerInterval;
+
+function startTimer(){
+
+timerInterval = setInterval(function(){
+
+time--;
+
+let minutes = Math.floor(time/60);
+let seconds = time%60;
+
+document.getElementById("timer").textContent =
+minutes + ":" + (seconds<10 ? "0"+seconds : seconds);
+
+if(time<=0){
+clearInterval(timerInterval);
+alert("Pomodoro session finished!");
+}
+
+},1000);
+
+}
+
+function resetTimer(){
+
+clearInterval(timerInterval);
+time=1500;
+document.getElementById("timer").textContent="25:00";
+
+}
+
+
+/* DARK MODE */
+
+function toggleDarkMode(){
+document.body.classList.toggle("dark-mode");
+}
+
+</script>
+
+</body>
+</html>
